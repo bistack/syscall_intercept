@@ -80,6 +80,8 @@
 
 #include <stdio.h>
 
+__asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
+
 /* The size of a trampoline jump, jmp instruction + pointer */
 enum { TRAMPOLINE_SIZE = 6 + 8 };
 

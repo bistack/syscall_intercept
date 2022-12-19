@@ -75,6 +75,18 @@ void (*intercept_hook_point_clone_parent)(long)
 
 bool debug_dumps_on;
 
+unsigned long
+my_getauxval(unsigned long type, char **envp)
+{
+	Elf64_auxv_t *p;
+	for (p = (Elf64_auxv_t *)envp; p->a_type != AT_NULL; p++) {
+		if (p->a_type == type) {
+			return p->a_un.a_val;
+		}
+	}
+	return 0;
+}
+
 void
 debug_dump(const char *fmt, ...)
 {
@@ -475,13 +487,16 @@ mprotect_asm_wrappers(void)
 static __attribute__((constructor)) void
 intercept(int argc, char **argv)
 {
+	char **my_envp = (char **)(argv) + argc + 1;
+	while (*my_envp++ != NULL);
+
 	(void) argc;
 	cmdline = argv[0];
 
 	if (!syscall_hook_in_process_allowed())
 		return;
 
-	vdso_addr = (void *)(uintptr_t)getauxval(AT_SYSINFO_EHDR);
+	vdso_addr = (void *)(uintptr_t)my_getauxval(AT_SYSINFO_EHDR, my_envp);
 	debug_dumps_on = getenv("INTERCEPT_DEBUG_DUMP") != NULL;
 	patch_all_objs = (getenv("INTERCEPT_ALL_OBJS") != NULL);
 	intercept_setup_log(getenv("INTERCEPT_LOG"),

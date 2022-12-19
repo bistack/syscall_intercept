@@ -36,6 +36,16 @@
 #include <fcntl.h>
 #include <sys/syscall.h>
 
+#ifndef SYS_getcpu
+#define SYS_getcpu		309
+#endif
+#ifndef SYS_kcmp
+#define SYS_kcmp		312
+#endif
+#ifndef SYS_finit_module
+#define SYS_finit_module	313
+#endif
+
 #define SARGS(name, r, ...) [SYS_##name] = {#name, r, {__VA_ARGS__}}
 
 /* Linux syscalls on X86_64 */

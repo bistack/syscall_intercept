@@ -36,7 +36,7 @@
 
 int main()
 {
-	intercept_hook_point = nullptr;
+	intercept_hook_point = 0;
 	(void) syscall_no_intercept(0);
 	(void) syscall_hook_in_process_allowed();
 }
